@@ -1,0 +1,68 @@
+version: '3.3'
+services:
+  mysql:
+    image: mariadb:latest
+    container_name: db
+    volumes:
+      - /data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: DBKepSec
+      MYSQL_DATABASE: db-data
+      MYSQL_USER: root
+      MYSQL_PASSWORD: random
+    expose:
+      - 3306
+    networks:
+      - testnet
+    restart: always
+
+  php:
+    image: php:fpm-alpine
+    container_name: app
+    volumes:
+      - /data/html:/var/www/html
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    expose:
+      - 9000
+    networks:
+      - testnet
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: webserv
+    volumes:
+      - /testnginx:/etc/nginx/conf.d
+      - /data/testhtml:/var/www/html
+      - /var/log/nginx:/var/log/nginx
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - php
+    networks:
+      - testnet
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpma
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: DBKepSec
+    links:
+      - mysql
+    ports:
+      - 8090:80
+    networks:
+      - testnet
+    restart: always
+
+networks:
+  testnet:
+    driver: bridge
