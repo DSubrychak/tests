@@ -35,8 +35,8 @@ services:
     image: nginx:latest
     container_name: webserv
     volumes:
-      - /testnginx:/etc/nginx/conf.d
-      - /data/testhtml:/var/www/html
+      - /nginx:/etc/nginx/conf.d
+      - /data/html:/var/www/html
       - /var/log/nginx:/var/log/nginx
     ports:
       - 80:80
